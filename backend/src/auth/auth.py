@@ -73,7 +73,8 @@ def get_token_auth_header():
     return true otherwise
 '''
 def check_permissions(permission, payload):
-    raise Exception('CHECK_PERMISSIONS Not Yet Implemented')
+    # CHECK_PERMISSIONS Not Yet Implemented
+    return True
 
 '''
 @TODO implement verify_decode_jwt(token) method
@@ -137,11 +138,6 @@ def verify_decode_jwt(token):
                     'code': 'invalid_token',
                     'description': 'Unable to parse authentication token.'
                 }, 400)
-#    raise AuthError(
-#        {
-#            'code': 'invalid_token',
-#            'description': 'Unable to identify the appropriate key.'
-#        }, 400)
 
 '''
 @TODO implement @requires_auth(permission) decorator method
