@@ -29,6 +29,7 @@ export class DrinkMenuPage implements OnInit {
 
     const modal = await this.modalCtrl.create({
       component: DrinkFormComponent,
+      cssClass: 'drink-modal',
       componentProps: { drink: activedrink, isNew: !activedrink }
     });
 
