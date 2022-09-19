@@ -71,7 +71,19 @@ def drinks_detail(f):
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the newly created drink
         or appropriate status code indicating reason for failure
 '''
-
+@app.route('/drinks', methods=['POST'], endpoint='post_drink')
+@requires_auth('post:drinks')
+def post_drink(parameter):
+    data = dict(request.json)
+    drink = Drink(title=data.get('title'), recipe=json.dumps(data.get('recipe')))
+    try:
+        drink.insert()
+        return json.dumps({'success': True, 'drink': drink.long()}), 200
+    except:
+        return json.dumps({
+            'success': False,
+            'error': "An problem has occurred."
+        }), 500
 
 '''
 @TODO implement endpoint
