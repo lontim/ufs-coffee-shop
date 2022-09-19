@@ -89,7 +89,59 @@ def check_permissions(permission, payload):
     !!NOTE urlopen has a common certificate error described here: https://stackoverflow.com/questions/50236117/scraping-ssl-certificate-verify-failed-error-for-http-en-wikipedia-org
 '''
 def verify_decode_jwt(token):
-    raise Exception('VERIFY_DECODE_JWT Not Yet Implemented')
+    jsonURL = urlopen(f'https://{AUTH0_DOMAIN}/.well-known/jwks.json')
+    jsonWebKeySet = json.loads(jsonURL.read())
+    unverified_token_header = jwt.get_unverified_header(token)
+    rsa_key = {}
+    if 'kid' not in unverified_token_header:
+        raise AuthError(
+            {
+                'code': 'invalid_token',
+                'description': 'Token does not contain a Key ID (kid) and so cannot be verified.'
+            }, 401)
+    for key in jsonWebKeySet['keys']:
+        if key['kid'] == unverified_token_header['kid']:
+            rsa_key = {
+                'kty': key['kty'],
+                'kid': key['kid'],
+                'use': key['use'],
+                'n':   key['n'],
+                'e':   key['e']
+            }
+    if rsa_key:
+        try:
+            payload = jwt.decode(token,
+                                 rsa_key,
+                                 algorithms=ALGORITHMS,
+                                 audience=API_AUDIENCE,
+                                 issuer='https://' + AUTH0_DOMAIN + '/')
+
+            return payload
+
+        except jwt.ExpiredSignatureError:
+            raise AuthError(
+                {
+                    'code': 'token_expired',
+                    'description': 'The token has expired and can no longer be used.'
+                }, 401)
+
+        except jwt.JWTClaimsError:
+            raise AuthError(
+                {
+                    'code': 'invalid_token',
+                    'description': 'There is a problem with the claims.'
+                }, 401)
+        except Exception:
+            raise AuthError(
+                {
+                    'code': 'invalid_token',
+                    'description': 'Unable to parse authentication token.'
+                }, 400)
+#    raise AuthError(
+#        {
+#            'code': 'invalid_token',
+#            'description': 'Unable to identify the appropriate key.'
+#        }, 400)
 
 '''
 @TODO implement @requires_auth(permission) decorator method
