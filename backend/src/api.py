@@ -115,7 +115,7 @@ def patch_drink(parameter, id):
 
 
 '''
-@TODO implement endpoint
+implement endpoint
     DELETE /drinks/<id>
         where <id> is the existing model id
         it should respond with a 404 error if <id> is not found
@@ -124,13 +124,24 @@ def patch_drink(parameter, id):
     returns status code 200 and json {"success": True, "delete": id} where id is the id of the deleted record
         or appropriate status code indicating reason for failure
 '''
-
+@app.route('/drinks/<id>', methods=['DELETE'], endpoint='delete_drink')
+@requires_auth('patch:drinks')
+def delete_drink(parameter, id):
+    try:
+        drink = Drink.query.filter(Drink.id == id).one_or_none()
+        if drink:
+            drink.delete()
+            return json.dumps({'success': True, 'drink': id}), 200
+        else:
+            return json.dumps({'success': False, 'error': 'Drink ' + id + ' not found in database, unable to delete'}), 404
+    except:
+        return json.dumps({
+            'success': False, 'error': "Drink deletion error"}), 500
 
 # Error Handling
 '''
 Example error handling for unprocessable entity
 '''
-
 
 @app.errorhandler(422)
 def unprocessable(error):
@@ -142,7 +153,7 @@ def unprocessable(error):
 
 
 '''
-@TODO implement error handlers using the @app.errorhandler(error) decorator
+implement error handlers using the @app.errorhandler(error) decorator
     each error handler should return (with approprate messages):
              jsonify({
                     "success": False,
@@ -153,12 +164,21 @@ def unprocessable(error):
 '''
 
 '''
-@TODO implement error handler for 404
+implement error handler for 404
     error handler should conform to general task above
 '''
+@app.errorhandler(404)
+def unprocessable(error):
+    return jsonify({
+        "success": False, "error": 404, "message": "not found"}), 404
 
 
 '''
-@TODO implement error handler for AuthError
+implement error handler for AuthError
     error handler should conform to general task above
 '''
+@app.errorhandler(AuthError)
+def handle_auth_error(exception):
+    response = jsonify(exception.error)
+    response.status_code = exception.status_code
+    return response
