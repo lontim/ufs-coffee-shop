@@ -31,7 +31,35 @@ class AuthError(Exception):
     return the token part of the header
 '''
 def get_token_auth_header():
-   raise Exception('Not Implemented')
+    auth = request.headers.get("Authorization", None)
+    if not auth:
+        raise AuthError(
+            {
+                "code": "authorization_header_missing",
+                "description": "Authorisation header is missing"
+            }, 401)
+    auth_section = auth.split()
+    if auth_section[0] != "Bearer": # auth header has no Bearer prefix
+        raise AuthError(
+            {
+                "code": "invalid_header",
+                "description": "Authorisation header needs to include Bearer prefix"
+            }, 401)
+    elif len(auth_section) == 1:   # auth header has only one section
+        raise AuthError(
+            {
+                "code": "invalid_header",
+                "description": "Token missing in authorisation header"
+            }, 401)
+    elif len(auth_section) > 2:   # auth header has too many sections
+        raise AuthError(
+            {
+                "code": "invalid_header",
+                "description": "Authorisation header has too many sections"
+            }, 401)
+
+    token = auth_section[1]
+    return token
 
 '''
 @TODO implement check_permissions(permission, payload) method
@@ -45,7 +73,7 @@ def get_token_auth_header():
     return true otherwise
 '''
 def check_permissions(permission, payload):
-    raise Exception('Not Implemented')
+    raise Exception('CHECK_PERMISSIONS Not Yet Implemented')
 
 '''
 @TODO implement verify_decode_jwt(token) method
@@ -61,7 +89,7 @@ def check_permissions(permission, payload):
     !!NOTE urlopen has a common certificate error described here: https://stackoverflow.com/questions/50236117/scraping-ssl-certificate-verify-failed-error-for-http-en-wikipedia-org
 '''
 def verify_decode_jwt(token):
-    raise Exception('Not Implemented')
+    raise Exception('VERIFY_DECODE_JWT Not Yet Implemented')
 
 '''
 @TODO implement @requires_auth(permission) decorator method
