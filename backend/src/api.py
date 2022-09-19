@@ -47,7 +47,7 @@ def get_drinks():
         or appropriate status code indicating reason for failure
 '''
 @app.route('/drinks-detail', methods=['GET'], endpoint='drinks_detail')
-# @requires_auth('get:drinks-detail')
+@requires_auth('get:drinks-detail')
 def drinks_detail(f):
     """
         This endpoints returns all drinks with a long description.
