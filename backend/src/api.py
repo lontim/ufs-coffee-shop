@@ -63,7 +63,7 @@ def drinks_detail(f):
 
 
 '''
-@TODO implement endpoint
+implement endpoint
     POST /drinks
         it should create a new row in the drinks table
         it should require the 'post:drinks' permission
@@ -82,7 +82,7 @@ def post_drink(parameter):
     except:
         return json.dumps({
             'success': False,
-            'error': "An problem has occurred."
+            'error': "There's a coffee-related issue that you need to look into."
         }), 500
 
 '''
@@ -96,6 +96,22 @@ def post_drink(parameter):
     returns status code 200 and json {"success": True, "drinks": drink} where drink an array containing only the updated drink
         or appropriate status code indicating reason for failure
 '''
+@app.route('/drinks/<id>', methods=['PATCH'], endpoint='patch_drink')
+@requires_auth('patch:drinks')
+def patch_drink(parameter, id):
+    try:
+        data = dict(request.json)
+        drink = Drink.query.filter(Drink.id == id).one_or_none()
+        if drink:
+            drink.title = data.get('title')
+            recipe = data.get('recipe')
+            drink.recipe = json.dumps(recipe)
+            drink.update()
+            return json.dumps({'success': True, 'drinks': [drink.long()]}), 200
+        else:
+            return json.dumps({'success': False, 'error': 'Drink ' + id + ' could not be loaded to patch it'}), 404
+    except:
+        return json.dumps({'success': False, 'error': "Drink patching error"}), 500
 
 
 '''
