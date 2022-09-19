@@ -73,11 +73,19 @@ def get_token_auth_header():
     return true otherwise
 '''
 def check_permissions(permission, payload):
-    # CHECK_PERMISSIONS Not Yet Implemented
-    return True
+    permissions = payload.get('permissions')
+    if (permission in permissions):
+        print (str(permission) + " in " + str(permissions))
+        return True
+    else:
+        raise AuthError(
+                {
+                    'code': 'invalid_permissions',
+                    'description': 'User doesn\'t have permission.'
+                }, 401)
 
 '''
-@TODO implement verify_decode_jwt(token) method
+implement verify_decode_jwt(token) method
     @INPUTS
         token: a json web token (string)
 
@@ -140,7 +148,7 @@ def verify_decode_jwt(token):
                 }, 400)
 
 '''
-@TODO implement @requires_auth(permission) decorator method
+implement @requires_auth(permission) decorator method
     @INPUTS
         permission: string permission (i.e. 'post:drink')
 
@@ -157,6 +165,5 @@ def requires_auth(permission=''):
             payload = verify_decode_jwt(token)
             check_permissions(permission, payload)
             return f(payload, *args, **kwargs)
-
         return wrapper
     return requires_auth_decorator

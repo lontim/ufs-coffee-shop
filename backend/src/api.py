@@ -39,7 +39,7 @@ def get_drinks():
     }), 200
 
 '''
-@TODO implement endpoint
+implement endpoint
     GET /drinks-detail
         it should require the 'get:drinks-detail' permission
         it should contain the drink.long() data representation
@@ -49,10 +49,6 @@ def get_drinks():
 @app.route('/drinks-detail', methods=['GET'], endpoint='drinks_detail')
 @requires_auth('get:drinks-detail')
 def drinks_detail(f):
-    """
-        This endpoints returns all drinks with a long description.
-        Drinks array, otherwise the error handler
-        """
     try:
         return json.dumps({
             'success':
