@@ -31,8 +31,9 @@ CORS(app)
 @app.route('/drinks')
 def get_drinks():
     drinks = Drink.query.all()
-    print(drinks)
+    # print(drinks)
     beverages_list = [drink.short() for drink in drinks] # Create a list of short beverage names
+    print (beverages_list)
     return jsonify({
         'Success':True,
         'drinks': beverages_list

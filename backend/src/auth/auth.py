@@ -73,11 +73,18 @@ def get_token_auth_header():
     return true otherwise
 '''
 def check_permissions(permission, payload):
-    permissions = payload.get('permissions')
-    if (permission in permissions):
-        print (str(permission) + " in " + str(permissions))
-        return True
-    else:
+    try:
+        permissions = payload.get('permissions')
+        if (permission in permissions):
+            print (str(permission) + " in " + str(permissions))
+            return True
+        else:
+            raise AuthError(
+                    {
+                        'code': 'invalid_permissions',
+                        'description': 'User doesn\'t have permission.'
+                    }, 403)
+    except:
         raise AuthError(
                 {
                     'code': 'invalid_permissions',
